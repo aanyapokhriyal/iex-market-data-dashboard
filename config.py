@@ -7,8 +7,8 @@ DB_USER = "root"
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = "iex_task_db"
 
-IEX_API_URL = ("https://www.iexindia.com/IEXPublish/AppServices.svc/IEXGetTradeData")
-IEX_API_KEY = "NCLIEXHkl7900@8Uyhkj"
+IEX_API_URL = os.getenv("IEX_API_URL")
+IEX_API_KEY = os.getenv("IEX_API_KEY")
 
 JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY")
 #generated from this  python -c "import secrets; print(secrets.token_hex(32))"
