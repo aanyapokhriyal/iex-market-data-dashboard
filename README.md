@@ -53,6 +53,8 @@ mysql -u root -p < iex_task.sql
 ```env
 DB_PASSWORD=<your_mysql_password>
 JWT_SECRET_KEY=<your_jwt_secret>
+IEX_API_URL = 
+IEX_API_KEY = 
 ```
 
 5. Start the app:
