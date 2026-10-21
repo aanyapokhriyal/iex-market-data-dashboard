@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home page</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Please select</h1>
+        <form action="/load-data" class="auth-form" method="post">
+            <label for="pcode">Product code:</label><br>
+            <select id="pcode" name="product_code" required>
+                <option value="" disabled {% if not pcode %}selected{% endif %} >Select Product Code </option>
+                <option value="1" {% if pcode=="1" %}selected{% endif %}>1-DAM</option>
+                <option value="2" {% if pcode=="2" %}selected{% endif %}>2-GDAM</option>
+                <option value="3" {% if pcode=="3" %}selected{% endif %}>3-RTM</option>
+            </select><br><br>
+
+            <label for="fdate">From Date:</label><br>
+            <input type="date" id="fdate" name="from_date" required><br><br>
+
+            <label for="tdate">To Date:</label><br>
+            <input type="date" id="tdate" name="to_date" required><br><br>
+
+            <input type="submit" class="btn" value="Submit">
+            <div class="controls-row">
+            <a href="/view-data?product_code={{ product_code }}&from_date={{ from_date }}&to_date={{ to_date }}">
+                <button type="button" class="btn" {% if not result %}disabled{% endif %}>View Data</button></a>
+            <a href="/logout" class="btn">← Logout</a>
+            </div>
+
+            <div class="message">
+                {% if result %}
+                <p><strong>Status:</strong> {{ result.status }}</p>
+                <p><strong>Rows Inserted:</strong> {{ result.rows_inserted }}</p>
+                <p><strong>Job UUID:</strong> {{ result.job_uuid }}</p>
+                {% endif %}
+            </div>
+
+        </form>
+    </div>
+</body>
+
+</html>

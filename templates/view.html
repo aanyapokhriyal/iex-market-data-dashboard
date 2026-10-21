@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>View Exchange Data</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+<body>
+
+    <h1>Exchange Data</h1>
+    <div class="controls-row">
+        <a href="/get-details" class="btn">← Back to Home</a><br>
+        <a href="/logout" class="btn">← Logout</a>
+    </div>
+    <a href="/visualize?product_code={{ product_code }}&from_date={{ from_date }}&to_date={{ to_date }}" class="btn"
+        onclick="return checkAccess()">Visualize</a>
+
+    {% set product_names = {1: "DAM", 2: "GDAM", 3: "RTM"} %}
+
+    <p class="data-summary"><strong>Product Code:</strong> {{ product_code }}-{{ product_names.get(product_code, "Unknown") }} &nbsp;
+        <strong>From:</strong> {{ from_date }} &nbsp;
+        <strong>To:</strong> {{ to_date }}
+    </p>
+    <p class="data-note"    ><strong>Note:</strong> MCV is reported nationally only; area-level rows have no MCV value.</p>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+
+        <tr>
+            <th>Trade Date</th>
+            <th>Product</th>
+            <th>Block No</th>
+            <th>Timestamp</th>
+            <th>Buy Volume</th>
+            <th>MCV</th>
+            <th>MCP</th>
+            <th>Sell Volume</th>
+            <th>Area Code</th>
+        </tr>
+
+        {% for row in records %}
+
+        <tr>
+            <td>{{ row.trade_date }}</td>
+            <td>{{ row.product_code }}-{{ product_names.get(row.product_code, "Unknown") }}</td>
+            <td>{{ row.block_no }}</td>
+            <td>{{ row.timestamp }}</td>
+            <td>{{ row.buy_vol }}</td>
+            <td>{{ row.mcv }}</td>
+            <td>{{ row.mcp }}</td>
+            <td>{{ row.sell_vol }}</td>
+            <td>{{ row.area_code }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <br>
+    <p>DEBUG ROLE: {{ current_user_role }}</p>
+</body>
+<script>
+    const userRole = "{{ current_user_role }}";
+    function checkAccess() {
+        if (userRole !== "admin") {
+            alert("You are not authorised to access this page");
+            return false;   // cancels the link's default navigation
+        }
+        return true;        // allows the link to navigate normally
+    }
+
+</script>
+
+</html>

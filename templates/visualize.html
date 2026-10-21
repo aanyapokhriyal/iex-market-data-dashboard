@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Visualize Exchange Data</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <h1>Visualize Data</h1>
+    <div class="controls-row">
+        <a href="/view-data?product_code={{ product_code }}&from_date={{ from_date }}&to_date={{ to_date }}"
+            class="btn">← Back to Data</a>
+        <a href="/logout" class="btn">← Logout</a>
+    </div>
+
+    {% set product_names = {1: "DAM", 2: "GDAM", 3: "RTM"} %}
+
+    <p><strong>Product Code:</strong> {{ product_code }}-{{ product_names.get(product_code, "Unknown") }} &nbsp;
+        <strong>From:</strong> {{ from_date }} &nbsp;
+        <strong>To:</strong> {{ to_date }}
+    </p>
+
+    <form method="get" action="/visualize" class="controls-row">
+        <input type="hidden" name="product_code" value="{{ product_code }}">
+        <input type="hidden" name="from_date" value="{{ from_date }}">
+        <input type="hidden" name="to_date" value="{{ to_date }}">
+
+        <div class="control-group">
+            <label for="yField">Select Y-axis value:</label>
+            <select id="yField" name="y_field">
+                <option value="" disabled {% if not y_field %}selected{% endif %}>Select Y-axis value</option>
+                <option value="mcp" {% if y_field=="mcp" %}selected{% endif %}>MCP</option>
+                <option value="mcv" {% if y_field=="mcv" %}selected{% endif %}>MCV</option>
+                <option value="buy_vol" {% if y_field=="buy_vol" %}selected{% endif %}>Buy Volume</option>
+                <option value="sell_vol" {% if y_field=="sell_vol" %}selected{% endif %}>Sell Volume</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="chartType">Select Chart Type:</label>
+            <select id="chartType" name="chart_type">
+                <option value="" disabled {% if not chart_type %}selected{% endif %}>Select Chart Type</option>
+                <option value="line" {% if chart_type=="line" %}selected{% endif %}>Line</option>
+                <option value="bar" {% if chart_type=="bar" %}selected{% endif %}>Bar</option>
+                <option value="scatter" {% if chart_type=="scatter" %}selected{% endif %}>Scatter</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn">Generate Chart</button>
+    </form>
+
+    <div class="chart-container">
+        <canvas id="dataChart"></canvas>
+    </div>
+
+    <script>
+        const labels = {{ labels | tojson }};
+        const values = {{ values | tojson }};
+        const yField = {{ y_field | tojson }};
+        const chartType = {{ chart_type | tojson }};
+
+        if (labels.length > 0 && chartType) {
+            const chartData = chartType === "scatter"
+                ? values.map((v, i) => ({ x: i, y: v }))
+                : values;
+
+            new Chart(document.getElementById('dataChart'), {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: yField.toUpperCase(),
+                        data: chartData,
+                        borderColor: 'blue',
+                        backgroundColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: chartType === "scatter" ? 'linear' : 'category',
+                            title: { display: true, text: 'Time' },
+                            ticks: chartType === "scatter"
+                                ? { callback: function (value) { return labels[value] ?? ''; }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 }
+                                : { maxRotation: 45, autoSkip: true, maxTicksLimit: 12 }
+                        },
+                        y: {
+                            title: { display: true, text: yField.toUpperCase() },
+                            beginAtZero: chartType === "bar"
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
